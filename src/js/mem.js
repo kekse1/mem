@@ -616,8 +616,7 @@ memory.getopt = (_vector = process.argv, _start = 2, _error = DEFAULT_GETOPT_ERR
 	//
 	const	ERRORS = (_error === null || _error === true),
 		opts = memory._OPTIONS,
-		keys = [ new Set(SHORT),
-			 new Set(LONG)	],
+		keys = [ SHORT, LONG ],
 		result = [];
 	var	dashes,
 		item,
