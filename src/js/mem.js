@@ -3,7 +3,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/mem/
- * v0.4.3
+ * v0.4.4
  */
 
 /*
@@ -11,6 +11,13 @@
  * BTW: the code is a little ugly... i wanted a really small script,
  * then i needed some more features and so on... dirty. but it worx. ^_^
  *
+ * 
+ * 
+ * TODO * one mode for (nearly) EXACTLY SAME OUTPUT like
+ *	`cat /proc/meminfo`, BUT w/ adapted sizes/units! ...
+ *		=> good! see --raw or DEFAULT_RAW, etc.!1 ..
+ *
+ * 
  *
  * STILL TODO!!!! i just "needed" to jump to the
  * `bash` shell script version of this lil' tool..
@@ -33,7 +40,8 @@ const
 	DEFAULT_SCIENTIFIC = true,
 	DEFAULT_SPACES = true,
 	DEFAULT_EOL = true;
-const
+var	//TODO/w/ options/etc....!!
+	DEFAULT_RAW = true,
 	DEFAULT_ZERO = false,
 	DEFAULT_ALL = false,
 	DEFAULT_FIELDS = [
@@ -57,7 +65,11 @@ DEFAULT_GETOPT_ERRORS = false,//zzzzz/TODO: (true);
 	DEFAULT_FILE_BASE = 1024;
 
 //
-if(DEFAULT_ALL === null)
+if(DEFAULT_RAW)
+{
+	DEFAULT_ZERO = true;
+}
+else if(DEFAULT_ALL === null)
 {
 	DEFAULT_FIELDS.length = 1;
 	DEFAULT_FIELDS[0] = 'MemAvailable';
@@ -88,7 +100,8 @@ if(!globalThis[kekse1])
 	Reflect.defineProperty(Math, 'size', { value: (_value, _base = DEFAULT_BASE, _precision = DEFAULT_PRECISION, _radix = DEFAULT_RADIX, _scientific = DEFAULT_SCIENTIFIC, _spaces = DEFAULT_SPACES) => {
 		if(_value <= 0)
 		{
-			return '0 Bytes';
+			return '0';
+			//return '0 Bytes';
 		}
 		
 		if(typeof _base === 'object' && _base !== null)
@@ -350,6 +363,7 @@ const memory = {
 		eol: DEFAULT_EOL,
 		zero: DEFAULT_ZERO,
 		all: DEFAULT_ALL,
+		raw: DEFAULT_RAW,
 		fields: DEFAULT_FIELDS
 	}
 };
@@ -366,7 +380,8 @@ const	MAP = {
 		'e': 'eol',
 		'f': 'fields',
 		'z': 'zero',
-		'a': 'all'
+		'a': 'all',
+		'w': 'raw'
 	};
 
 var	LONG = [
@@ -378,7 +393,8 @@ var	LONG = [
 		'eol',
 		'fields',
 		'zero',
-		'all'
+		'all',
+		'raw'
 	],
 	SHORT = [
 		'b',
@@ -389,7 +405,8 @@ var	LONG = [
 		'e',
 		'f',
 		'z',
-		'a'
+		'a',
+		'w'
 	];
 
 ((_throw = true) => {
@@ -553,7 +570,7 @@ memory.getMemoryInfo = (_params) => {
 
 		info[i][0] = info[i][0].trim();
 
-		if(FIELDS.size > 0 && !FIELDS.has(info[i][0]))
+		if(!DEFAULT_RAW && FIELDS.size > 0 && !FIELDS.has(info[i][0]))
 		{
 			continue;
 		}
@@ -567,7 +584,7 @@ memory.getMemoryInfo = (_params) => {
 					continue;
 				}
 			}
-			else
+			else if(!DEFAULT_RAW)
 			{
 				continue;
 			}
@@ -822,7 +839,12 @@ memory.start = () => {
 
 	delete result.errors;
 
-	for(const idx in result)
+	if(DEFAULT_RAW) for(const idx in result)
+	{
+		console.log((idx + ':').padEnd(maxLen + 2, ' ') +
+			Math.size(result[idx]));
+	}
+	else for(const idx in result)
 	{
 		if(++count > 1 && DEFAULT_EOL)//params.eol (much TODO); ...
 		{

@@ -7,8 +7,14 @@
 <br><br>
 
 ## Example Screenshot
+
 v**0.4.0**
 ![Example Screenshot (v0.4.0)](./img/v0.4.0.png)
+
+<br>
+
+v**0.4.4**
+![Example --raw output](./img/raw.v0.4.4.png)
 
 <br><br><br>
 
