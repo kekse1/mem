@@ -2,7 +2,13 @@
 <img src="https://kekse.biz/github.php?draw&override=github:mem" />
 
 # `mem`
-**TODO** (`.sh` and `.js`)!
+**TODO** (`.sh` and [`.js`](./src/js/mem.js))!
+
+<br><br>
+
+## Example Screenshot
+v**0.4.0**:
+![Example Screenshot (v0.4.0)](./img/v0.4.0.png)
 
 <br><br><br>
 
