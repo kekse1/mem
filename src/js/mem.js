@@ -397,6 +397,7 @@ if(!globalThis[kekse1])
 }
 
 //
+export default memory;
 import os from 'node:os';
 import fs from 'node:fs';
 
