@@ -7,14 +7,16 @@
  */
 
 /*
+ *
+ * BTW: the code is a little ugly... i wanted a really small script,
+ * then i needed some more features and so on... dirty. but it worx. ^_^
+ *
+ *
  * STILL TODO!!!! i just "needed" to jump to the
  * `bash` shell script version of this lil' tool..
  *
  * TODO * parse/use the `getopt()`!..
  * TODO * finish the `syntax()` for --help; ...
- *
- * BTW: the code is a little ugly... i wanted a really small script,
- * then i needed some more features and so on... dirty. but it worx. ^_^
  *
  */
 
