@@ -1,0 +1,12 @@
+
+	# bitte noch verweise hierhin @ github/{javascripts,scripts}; ... ^_^
+
+	# einen verweis hier auf github/radix/ ... wg. meiner hiesigen quick-n-dirty Math.size() loesung;
+
+	# evtl. auch @ github/radix/ hierhin verlinken???
+
+	# den code v.a. fertig stellen...
+
+		# GANZ WICHTIG: die `bash` shell script version!!1 ;-D
+
+
