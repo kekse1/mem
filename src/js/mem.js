@@ -3,23 +3,28 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/mem/
- * v0.4.2
+ * v0.4.3
  */
 
 /*
  * STILL TODO!!!! i just "needed" to jump to the
  * `bash` shell script version of this lil' tool..
  *
- * TODO * parse/use the `getCmdLineParams()`!..
+ * TODO * parse/use the `getopt()`!..
  * TODO * finish the `syntax()` for --help; ...
  *
  */
 
 //
 const
+	_DEBUG = false;
+
+//
+const
 	DEFAULT_BASE = 1024,
 	DEFAULT_PRECISION = 3,
-	DEFAULT_LOCALE = true,
+	//(bool) as "LOCALE":
+	DEFAULT_RADIX = true,
 	DEFAULT_SCIENTIFIC = true,
 	DEFAULT_SPACES = true,
 	DEFAULT_EOL = true;
@@ -35,6 +40,11 @@ const
 	];
 const
 	DEFAULT_START = true,
+	
+	
+DEFAULT_GETOPT_ERRORS = false,//zzzzz/TODO: (true);
+	
+	
 	// if only "MemAvailable" => (node:os).freemem();
 	DEFAULT_FILE = '/proc/meminfo',
 	DEFAULT_FILE_ENCODING = 'utf8',
@@ -70,7 +80,7 @@ if(!globalThis[kekse1])
 	//THIS IS A QUICK-AND-DIRTY VERSION... just re-wrote it new (from scratch) for only this `mem` purpose..
 	//you can find better versions (maybe) at < https://github.com/kekse1/radix/ > ... etc. pp.. ^_^ ...
 	//
-	Reflect.defineProperty(Math, 'size', { value: (_value, _base = DEFAULT_BASE, _precision = DEFAULT_PRECISION, _locale = DEFAULT_LOCALE, _scientific = DEFAULT_SCIENTIFIC, _spaces = DEFAULT_SPACES) => {
+	Reflect.defineProperty(Math, 'size', { value: (_value, _base = DEFAULT_BASE, _precision = DEFAULT_PRECISION, _radix = DEFAULT_RADIX, _scientific = DEFAULT_SCIENTIFIC, _spaces = DEFAULT_SPACES) => {
 		if(_value <= 0)
 		{
 			return '0 Bytes';
@@ -88,9 +98,9 @@ if(!globalThis[kekse1])
 				_scientific = _base.scientific;
 			}
 			
-			if(typeof _base.locale === 'boolean' || Number.isFinite(_base.locale))
+			if(typeof _base.radix === 'boolean' || Number.isFinite(_base.radix))
 			{
-				_locale = _base.locale;
+				_radix = _base.radix;
 			}
 			
 			if(Number.isFinite(_base.precision))
@@ -118,16 +128,16 @@ if(!globalThis[kekse1])
 			_scientific = DEFAULT_SCIENTIFIC;
 		}
 		
-		if(Number.isFinite(_locale))
+		if(Number.isFinite(_radix))
 		{
-			if((_locale = Math.trunc(_locale)) < 2 || _locale > 36)
+			if((_radix = Math.trunc(_radix)) < 2 || _radix > 36)
 			{
-				throw new Error('Invalid radix for locale argument');
+				throw new Error('Invalid radix/locale argument');
 			}
 		}
-		else if(typeof _locale !== 'boolean')
+		else if(typeof _radix !== 'boolean')
 		{
-			_locale = DEFAULT_LOCALE;
+			_radix = DEFAULT_RADIX;
 		}
 		
 		if(!Number.isFinite(_precision))
@@ -165,9 +175,9 @@ if(!globalThis[kekse1])
 		rest = Math.round(rest, _precision);
 		var	result;
 
-		if(typeof _locale === 'boolean')
+		if(typeof _radix === 'boolean')
 		{
-			if(_locale)//&& rest >= 1000; ..
+			if(_radix)//&& rest >= 1000; ..
 			{
 				result = rest.toLocaleString();
 			}
@@ -178,7 +188,7 @@ if(!globalThis[kekse1])
 		}
 		else
 		{
-			result = rest.toString(_locale);
+			result = rest.toString(_radix);
 		}
 		
 		if(!UNIT[index][_base])
@@ -214,19 +224,272 @@ if(!globalThis[kekse1])
 		return ((Math._round(_value * coefficient) /
 				coefficient) || 0);
 	}});
+
+	Reflect.defineProperty(String, 'tryCast', { value: (_item, _opts) => {
+		if(typeof _item !== 'string')
+		{
+			return _item;
+		}
+		
+		_opts = Object.assign({
+				empty: false,
+				array: false },
+			_opts);
+
+		var original = _item;
+		_item = _item.trim();
+		
+		if(_item.length === 0)
+		{
+			return (_opts.empty ? true : '');
+		}
+
+		if(_item[_item.length - 1] === 'n')
+		{
+			const temp = _item.slice(0, -1);
+			
+			if(temp.isNumeric)
+			{
+				return BigInt(temp);
+			}
+		}
+		else if(_item.isNumeric)
+		{
+			return Number(_item);
+		}
+
+		switch(_item.toLowerCase())
+		{
+			case 'true':
+			case 'yes':
+			case 'on':
+				return true;
+			case 'false':
+			case 'no':
+			case 'off':
+				return false;
+			case 'null':
+				return null;
+			case 'undefined':
+				return undefined;
+		}
+
+		if(_opts.array && _item.includes(':'))
+		{
+			_item = _item.split(':');
+			const res = new Array(_item.length);
+
+			for(var i = 0; i < _item.length; ++i)
+			{
+				res[i] = String.tryCast(_item[i].trim(),
+					Object.assign({}, _opts, {
+						array: false }));
+			}
+
+			return res;
+		}
+
+		return original;
+	}});
+
+	Reflect.defineProperty(String.prototype, 'isNumeric', { get: function()
+	{
+		var	string = this.valueOf(),
+			hadChar = false,
+			c = 0, byte;
+
+		while(string[c] === '-' || string[c] === '+')
+		{
+			++c;
+		}
+
+		if(c > 0)
+		{
+			string = string.substr(c);
+		}
+
+		if(string.length === 0)
+		{
+			return null;
+		}
+		
+		for(var i = 0; i < string.length; ++i)
+		{
+			if(string[i] === '.')
+			{
+				if(hadChar)
+				{
+					return false;
+				}
+				
+				hadChar = true;
+			}
+			else if((byte = string.charCodeAt(i)) < 48 || byte > 57)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}});
 }
 
 //
-const memory = {};
+const memory = {
+	OPTIONS: {
+		base: DEFAULT_BASE,
+		precision: DEFAULT_PRECISION,
+		radix: DEFAULT_RADIX,//locale
+		scientific: DEFAULT_SCIENTIFIC,
+		spaces: DEFAULT_SPACES,
+		eol: DEFAULT_EOL,
+		zero: DEFAULT_ZERO,
+		all: DEFAULT_ALL,
+		fields: DEFAULT_FIELDS
+	}
+};
+
+memory._OPTIONS = Object.
+	keys(memory.OPTIONS);
+
+const	MAP = {
+		'b': 'base',
+		'p': 'precision',
+		'r': 'radix',
+		's': 'scientific',
+		'c': 'spaces',
+		'e': 'eol',
+		'f': 'fields',
+		'z': 'zero',
+		'a': 'all'
+	};
+
+var	LONG = [
+		'base',
+		'precision',
+		'radix',
+		'scientific',
+		'spaces',
+		'eol',
+		'fields',
+		'zero',
+		'all'
+	],
+	SHORT = [
+		'b',
+		'p',
+		'r',
+		's',
+		'c',
+		'e',
+		'f',
+		'z',
+		'a'
+	];
+
+((_throw = true) => {
+	const	WRONG_LONG = 1,
+		WRONG_SHORT = 2;
+
+	const	short = new Set(SHORT),
+		long = new Set(LONG);
+	var	wrong = 0, err;
+
+	if(long.size !== LONG.length)
+	{
+		wrong |= WRONG_LONG;
+	}
+	
+	if(short.size !== SHORT.length)
+	{
+		wrong |= WRONG_SHORT;
+	}
+
+	if(wrong)
+	{
+		err = '[DEBUG] The ';
+		
+		switch(wrong)
+		{
+			case WRONG_LONG:
+				err += 'LONG[] is ';
+				break;
+			case WRONG_SHORT:
+				err += 'SHORT[] is ';
+				break;
+			default:
+				err += 'LONG[] and SHORT[] are ';
+				break;
+		}
+		
+		err += 'WRONG (ambiguous) - so maybe also the (MUCH TO SIMPLE) `getopt()`!?';
+		
+		if(_throw)
+		{
+			throw new Error(err);
+		}
+
+		console.error(err);
+		process.exit(224);
+	}
+
+	LONG = long;
+	SHORT = short;
+	
+	LONG.forEach((_item) => {
+		if(!(_item in memory.OPTIONS))
+		{
+			err = '[DEBUG] The key `' + _item + '` is unknown in the `memory.OPTIONS[].`';
+
+			if(_throw)
+			{
+				throw new Error(err);
+			}
+			
+			console.error(err);
+			process.exit(234);
+		}
+	});
+	
+	for(const idx in MAP)
+	{
+		if(idx.length !== 1)
+		{
+			err = '[DEBUG] The short item `' + idx + '` ain\'t one character wide.';
+
+			if(_throw)
+			{
+				throw new Error(err);
+			}
+			
+			console.error(err);
+			process.exit(244);
+		}
+		
+		if(!SHORT.has(idx))
+		{
+			err = '[DEBUG] The short item `' + idx + '` (mapped to `' +
+				MAP[idx] + '`) is unknown.';
+			
+			if(_throw)
+			{
+				throw new Error(err);
+			}
+			
+			console.error(err);
+			process.exit(254);
+		}
+	}
+})();
 
 //
 memory.syntax = (_exit = null) => {
 	//
-	throw new Error('TODO');
+	throw new Error('TODO (see also the `LONG` and `SHORT`...)!');
 	
 	//
 	//TODO/...
-	//.. see also the `getCmdLineParams()` below. ^_^ ...
+	//.. see also the `getopt()` below. ^_^ ...
 	//
 	
 	//
@@ -278,9 +541,7 @@ memory.getMemoryInfo = (_params) => {
 			continue;
 		}
 		
-		info[i][1] = info[i][1].trim();
-
-		if(!info[i][1].endsWith(DEFAULT_FILE_SIZE_SUFFIX))
+		if(!(info[i][1] = info[i][1].trim()))
 		{
 			continue;
 		}
@@ -292,10 +553,22 @@ memory.getMemoryInfo = (_params) => {
 			continue;
 		}
 
-		info[i][1] = (Number(info[i][1].split(' ')[0]) *
-					DEFAULT_FILE_BASE);
+		if(DEFAULT_FILE_SIZE_SUFFIX)
+		{
+			if(info[i][1].endsWith(DEFAULT_FILE_SIZE_SUFFIX))
+			{
+				if(!(info[i][1] = info[i][1].slice(0, -(DEFAULT_FILE_SIZE_SUFFIX.length))))
+				{
+					continue;
+				}
+			}
+			else
+			{
+				continue;
+			}
+		}
 
-		if(Number.isNaN(info[i][1]))
+		if(!info[i][1].isNumeric)
 		{
 			console.error('Unable to read value for the `' +
 				info[i][0] + '` entry. Skipping...');
@@ -303,24 +576,14 @@ memory.getMemoryInfo = (_params) => {
 			continue;
 		}
 		
+		info[i][1] = (Number(info[i][1].split(' ')[0]) *
+					DEFAULT_FILE_BASE);
+
 		if(!info[i][1] && !DEFAULT_ZERO)
 		{
 			continue;
 		}
 
-		/*switch(info[i][0])
-		{
-			case 'MemTotal':
-				info[i][0] = 'Total';
-				break;
-			case 'MemFree':
-				info[i][0] = 'Free';
-				break;
-			case 'MemAvailable':
-				info[i][0] = 'Available';
-				break;
-		}*/
-		
 		result[info[i][0]] = info[i][1];
 	}
 	
@@ -329,21 +592,12 @@ memory.getMemoryInfo = (_params) => {
 };
 
 memory.showFreeMemory = (_value = os.freemem(), _params, _key, _pad = _key.length) => {
-	//
-	//TODO/see also `getCmdLineParams()`, etc...
-	//
-	/*_params = Object.assign({
-		base: DEFAULT_BASE,
-		precision: DEFAULT_PRECISION,
-		locale: DEFAULT_LOCALE,
-		scientific: DEFAULT_SCIENTIFIC,
-		spaces: DEFAULT_SPACES,
-		eol: DEFAULT_EOL,
-		fields: DEFAULT_FIELDS,
-		zero: DEFAULT_ZERO,
-		all: DEFAULT_ALL },
-			_params);
-	 */
+//
+//TODO/..!1
+//
+	_params = Object.assign({},
+		memory.OPTIONS,
+		_params);
 
 	//
 	console.log(_key.padStart(_pad, ' ') + ': ' + _value.toLocaleString() +
@@ -352,58 +606,198 @@ memory.showFreeMemory = (_value = os.freemem(), _params, _key, _pad = _key.lengt
 		os.EOL + ''.padStart(_pad + 2) + Math.size(_value, 1000));
 };
 
-memory.getCmdLineParams = (_vector = process.argv, _start = 2) => {
-	const result = {
-		base: [],
-		precision: null,
-		locale: null,
-		scientific: null,
-		spaces: null,
-		eol: null,
-		fields: [],
-		zero: null,
-		all: null };
-	
-	for(var i = _start, b = 0; i < _vector.length; ++i)
+//
+memory.getopt = (_vector = process.argv, _start = 2, _error = DEFAULT_GETOPT_ERRORS) => {
+	//
+	const	ERRORS = (_error === null || _error === true),
+		opts = memory._OPTIONS,
+		keys = [ new Set(SHORT),
+			 new Set(LONG)	],
+		result = [];
+	var	dashes,
+		item,
+		i, j,
+		err;
+
+	for(const key of opts)
 	{
-		switch(_vector[i])
+		result[key] = null;
+	}
+	
+	result.base = [];
+	result.fields = [];
+
+	if(!_DEBUG)
+	{
+		return result;
+	}
+	
+	//
+	for(var k = _start; k < _vector.length; ++k) switch(_vector[i])
+	{
+		case '--help':
+		case '-h':
+		case '-?':
+			return memory.syntax(0);
+			break;
+	}
+
+	//
+	loop: for(i = _start, j = 0; i < _vector.length; ++i)
+	{
+		if(!(item = _vector[i].trim()))
 		{
-			case '--help':
-			case '-h':
-			case '-?':
-				return memory.syntax(0);
-			case '--base':
-			case '-b':
-				break;
-			case '--precision':
-			case '-p':
-				break;
-			case '--locale':
-			case '--radix':
-			case '-l':
-			case '-r':
-				break;
-			case '--scientific':
-			case '-s':
-				break;
-			case '--spaces':
-			case '-S':
-				break;
-			case '--eol':
-			case '-E':
-				break;
-			case '--fields':
-			case '-f':
-				break;
-			case '--easy':
-			case '-e':
-				break;
+			continue;
+		}
+		
+		dashes = 0;
+		while(item[dashes++] === '-');
+
+		if(--dashes === 1 || dashes === 2)
+		{
+			if(!(item = item.substr(dashes).trim()))
+			{
+				switch(dashes)
+				{
+					case 1:
+						result[j++] = _vector[i];
+						break;
+					case 2:
+						break loop;
+				}
+
+				continue loop;
+			}
+
+			switch(dashes)
+			{
+				case 1:
+					if(item.length !== 1)
+					{
+						result[j++] = _vector[i];
+						continue loop;
+					}
+					break;
+				case 2:
+					if(item.length === 1)
+					{
+						result[j++] = _vector[i];
+						continue loop;
+					}
+					break;
+				default:
+					result[j++] = String.tryCast(
+						_vector[i], {
+							array: false,
+							empty: false });
+					continue loop;
+			}
+
+			if(!keys[dashes - 1].has(item))
+			{
+				if(ERRORS)
+				{
+					err = 'The key `' + _vector[i] + '` is unknown.';
+
+					if(_error === null)
+					{
+						throw new Error(err);
+					}
+
+					console.error(err);
+					process.exit(127);
+				}
+				else
+				{
+					result[j++] = String.tryCast(
+						_vector[i], {
+							array: false,
+							empty: false });
+				}
+				
+				continue loop;
+			}
+			
+			if(dashes === 1 && !(item = MAP[item]))
+			{
+				err = 'The short key `' + _vector[i] + '` ain\'t really mapped to a long key!';
+				
+				if(_error === null)
+				{
+					throw new Error(err);
+				}
+				
+				console.error(err);
+				process.exit(125);
+			}
+
+			switch(item)
+			{
+				case 'base': // integer => array[];
+					break;
+				case 'precision': // integer
+					break;
+				case 'radix': // integer
+					break;
+				case 'scientific': // boolean
+					break;
+				case 'spaces': // boolean
+					break;
+				case 'eol': // boolean
+					break;
+				case 'zero': // boolean
+					break;
+				case 'all': // boolean/null
+					break;
+				case 'fields': // string/array => array[];
+					break;
+
+				default:
+					if(ERRORS)
+					{
+						err = 'Short key `' + _vector[i] + '` maps to an unknown long item `--' + item + '`!';
+
+						if(_error === null)
+						{
+							throw new Error(err);
+						}
+						
+						console.error(err);
+						process.exit(126);
+					}
+					
+					result[j++] = String.tryCast(
+						_vector[i], {
+							array: false,
+							empty: false });
+					continue loop;
+			}
+			
+			//
+			//zzzz/...
+			//..
+			//
+		}
+		else
+		{
+			result[j++] = _vector[i];
 		}
 	}
+	
+	for(; i < _vector.length; ++i)
+	{
+		result[j++] = _vector[i];
+	}
+
+//debug/zzzzz
+console.dir({result,O:memory.OPTIONS}); process.exit(111);
+
+	return result;
 };
 
+//
 memory.start = () => {
-	const	params = memory.getCmdLineParams(),
+	const	params = memory.getopt(),
 		result = memory.getMemoryInfo(params);
 	var	maxLen = 0,
 		count = 0,
