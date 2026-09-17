@@ -7,7 +7,7 @@
 <br><br>
 
 ## Example Screenshot
-v**0.4.0**:
+v**0.4.0**
 ![Example Screenshot (v0.4.0)](./img/v0.4.0.png)
 
 <br><br><br>
