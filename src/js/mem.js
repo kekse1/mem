@@ -13,6 +13,9 @@
  * TODO * parse/use the `getopt()`!..
  * TODO * finish the `syntax()` for --help; ...
  *
+ * BTW: the code is a little ugly... i wanted a really small script,
+ * then i needed some more features and so on... dirty. but it worx. ^_^
+ *
  */
 
 //
@@ -730,7 +733,7 @@ memory.getopt = (_vector = process.argv, _start = 2, _error = DEFAULT_GETOPT_ERR
 				console.error(err);
 				process.exit(125);
 			}
-
+console.dir({item});
 			switch(item)
 			{
 				case 'base': // integer => array[];
