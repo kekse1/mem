@@ -34,7 +34,7 @@ const
 //
 const
 	DEFAULT_BASE = 1024,
-	DEFAULT_PRECISION = 3,
+	DEFAULT_PRECISION = 2,
 	//(bool) as "LOCALE":
 	DEFAULT_RADIX = true,
 	DEFAULT_SCIENTIFIC = true,
