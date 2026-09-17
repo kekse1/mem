@@ -3,7 +3,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/mem/
- * v0.4.0
+ * v0.4.1
  */
 
 /*
@@ -51,194 +51,9 @@ if(DEFAULT_EASY)
 const	FIELDS = new Set(DEFAULT_FIELDS);
 
 //
-const	kekse1 = Symbol.for(import.meta?.url || 'kekse1/mem'),
-	memory = {};
-
-const syntax = (_exit = null) => {
-	//
-	throw new Error('TODO');
-	
-	//
-	//TODO/...
-	//.. see also the `getCmdLineParams()` below. ^_^ ...
-	//
-	
-	//
-	if(Number.isFinite(_exit))
-	{
-		process.exit(Math.trunc(Math.abs(_exit)) % 256);
-	}
-};
-
-memory.getMemoryInfo = (_params) => {
-	if(FIELDS.size === 0)
-	{
-		FIELDS.add('MemAvailable');
-	}
-
-	if(FIELDS.size === 1 && FIELDS.has('MemAvailable'))
-	{
-		// *bewusst* *nicht* "MemAvailable". zur unterscheidung. ;-) ...
-		return { 'Available': os.freemem(), errors: 0 };
-	}
-	
-	var	errors = 0,
-		info;
-	
-	try
-	{
-		info = fs.readFileSync(DEFAULT_FILE, {
-			encoding: DEFAULT_FILE_ENCODING });
-	}
-	catch(_err)
-	{
-		console.error('ERROR trying to read the `' +
-			DEFAULT_FILE + '` (' + _err.message + ')');
-		console.error('Falling backing...' + os.EOL);
-		
-		return { 'Available': os.freemem() };
-	}
-	
-	const	result = {};
-	
-	info = info.split(os.EOL);
-
-	for(var i = 0; i < info.length; ++i)
-	{
-		if(!(info[i] = info[i].trim()))
-		{
-			continue;
-		}
-
-		info[i] = info[i].split(':', 2);
-		
-		if(info[i].length !== 2)
-		{
-			continue;
-		}
-		
-		info[i][1] = info[i][1].trim();
-
-		if(!info[i][1].endsWith(DEFAULT_FILE_SIZE_SUFFIX))
-		{
-			continue;
-		}
-
-		info[i][0] = info[i][0].trim();
-		
-		if(!FIELDS.has(info[i][0]))
-		{
-			continue;
-		}
-
-		info[i][1] = (Number(info[i][1].split(' ')[0]) *
-					DEFAULT_FILE_BASE);
-
-		if(Number.isNaN(info[i][1]))
-		{
-			console.error('Unable to read value for the `' +
-				info[i][0] + '` entry. Skipping...');
-			++errors;
-			continue;
-		}
-		
-		if(!info[i][1] && !DEFAULT_ZERO)
-		{
-			continue;
-		}
-
-		/*switch(info[i][0])
-		{
-			case 'MemTotal':
-				info[i][0] = 'Total';
-				break;
-			case 'MemFree':
-				info[i][0] = 'Free';
-				break;
-			case 'MemAvailable':
-				info[i][0] = 'Available';
-				break;
-		}*/
-		
-		result[info[i][0]] = info[i][1];
-	}
-	
-	result.errors = errors;
-	return result;
-};
-
-memory.showFreeMemory = (_value = os.freemem(), _params, _key, _pad = _key.length) => {
-	//
-	//TODO/see also `getCmdLineParams()`, etc...
-	//
-	/*_params = Object.assign({
-		base: DEFAULT_BASE,
-		precision: DEFAULT_PRECISION,
-		locale: DEFAULT_LOCALE,
-		scientific: DEFAULT_SCIENTIFIC,
-		spaces: DEFAULT_SPACES,
-		eol: DEFAULT_EOL,
-		fields: DEFAULT_FIELDS,
-		default: DEFAULT_ENV },
-			_params);
-	 */
-
-	//
-	console.log(_key.padStart(_pad, ' ') + ': ' + _value.toLocaleString() +
-		' (' + _value.toString() + ') ' + 'Bytes');
-	console.log(''.padStart(_pad + 2) + Math.size(_value, 1024) +
-		os.EOL + ''.padStart(_pad + 2) + Math.size(_value, 1000));
-};
-
-memory.getCmdLineParams = (_vector = process.argv, _start = 2) => {
-	const result = {
-		base: [],
-		precision: null,
-		locale: null,
-		scientific: null,
-		spaces: null,
-		eol: null,
-		full: null,
-		fields: [],
-		easy: null };
-	
-	for(var i = _start, b = 0; i < _vector.length; ++i)
-	{
-		switch(_vector[i])
-		{
-			case '--help':
-			case '-h':
-			case '-?':
-				return syntax(0);
-			case '--base':
-			case '-b':
-				break;
-			case '--precision':
-			case '-p':
-				break;
-			case '--locale':
-			case '--radix':
-			case '-l':
-			case '-r':
-				break;
-			case '--scientific':
-			case '-s':
-				break;
-			case '--spaces':
-			case '-S':
-				break;
-			case '--eol':
-			case '-E':
-				break;
-			case '--fields':
-			case '-f':
-				break;
-			case '--easy':
-			case '-e':
-				break;
-		}
-	}
-};
+const	kekse1 = Symbol.for(
+		import.meta?.url ||
+			'kekse1/mem');
 
 //
 if(!globalThis[kekse1])
@@ -397,11 +212,195 @@ if(!globalThis[kekse1])
 }
 
 //
-export default memory;
-import os from 'node:os';
-import fs from 'node:fs';
+const memory = {};
 
 //
+memory.syntax = (_exit = null) => {
+	//
+	throw new Error('TODO');
+	
+	//
+	//TODO/...
+	//.. see also the `getCmdLineParams()` below. ^_^ ...
+	//
+	
+	//
+	if(Number.isFinite(_exit))
+	{
+		process.exit(Math.trunc(Math.abs(_exit)) % 256);
+	}
+};
+
+memory.getMemoryInfo = (_params) => {
+	if(FIELDS.size === 0)
+	{
+		FIELDS.add('MemAvailable');
+	}
+
+	if(FIELDS.size === 1 && FIELDS.has('MemAvailable'))
+	{
+		// *bewusst* *nicht* "MemAvailable". zur unterscheidung. ;-) ...
+		return { 'Available': os.freemem(), errors: 0 };
+	}
+	
+	var	errors = 0,
+		info;
+	
+	try
+	{
+		info = fs.readFileSync(DEFAULT_FILE, {
+			encoding: DEFAULT_FILE_ENCODING });
+	}
+	catch(_err)
+	{
+		console.error('ERROR trying to read the `' +
+			DEFAULT_FILE + '` (' + _err.message + ')');
+		console.error('Falling backing...' + os.EOL);
+		
+		return { 'Available': os.freemem() };
+	}
+	
+	const	result = {};
+	
+	info = info.split(os.EOL);
+
+	for(var i = 0; i < info.length; ++i)
+	{
+		if(!(info[i] = info[i].trim()))
+		{
+			continue;
+		}
+
+		info[i] = info[i].split(':', 2);
+		
+		if(info[i].length !== 2)
+		{
+			continue;
+		}
+		
+		info[i][1] = info[i][1].trim();
+
+		if(!info[i][1].endsWith(DEFAULT_FILE_SIZE_SUFFIX))
+		{
+			continue;
+		}
+
+		info[i][0] = info[i][0].trim();
+		
+		if(!FIELDS.has(info[i][0]))
+		{
+			continue;
+		}
+
+		info[i][1] = (Number(info[i][1].split(' ')[0]) *
+					DEFAULT_FILE_BASE);
+
+		if(Number.isNaN(info[i][1]))
+		{
+			console.error('Unable to read value for the `' +
+				info[i][0] + '` entry. Skipping...');
+			++errors;
+			continue;
+		}
+		
+		if(!info[i][1] && !DEFAULT_ZERO)
+		{
+			continue;
+		}
+
+		/*switch(info[i][0])
+		{
+			case 'MemTotal':
+				info[i][0] = 'Total';
+				break;
+			case 'MemFree':
+				info[i][0] = 'Free';
+				break;
+			case 'MemAvailable':
+				info[i][0] = 'Available';
+				break;
+		}*/
+		
+		result[info[i][0]] = info[i][1];
+	}
+	
+	result.errors = errors;
+	return result;
+};
+
+memory.showFreeMemory = (_value = os.freemem(), _params, _key, _pad = _key.length) => {
+	//
+	//TODO/see also `getCmdLineParams()`, etc...
+	//
+	/*_params = Object.assign({
+		base: DEFAULT_BASE,
+		precision: DEFAULT_PRECISION,
+		locale: DEFAULT_LOCALE,
+		scientific: DEFAULT_SCIENTIFIC,
+		spaces: DEFAULT_SPACES,
+		eol: DEFAULT_EOL,
+		fields: DEFAULT_FIELDS,
+		default: DEFAULT_ENV },
+			_params);
+	 */
+
+	//
+	console.log(_key.padStart(_pad, ' ') + ': ' + _value.toLocaleString() +
+		' (' + _value.toString() + ') ' + 'Bytes');
+	console.log(''.padStart(_pad + 2) + Math.size(_value, 1024) +
+		os.EOL + ''.padStart(_pad + 2) + Math.size(_value, 1000));
+};
+
+memory.getCmdLineParams = (_vector = process.argv, _start = 2) => {
+	const result = {
+		base: [],
+		precision: null,
+		locale: null,
+		scientific: null,
+		spaces: null,
+		eol: null,
+		full: null,
+		fields: [],
+		easy: null };
+	
+	for(var i = _start, b = 0; i < _vector.length; ++i)
+	{
+		switch(_vector[i])
+		{
+			case '--help':
+			case '-h':
+			case '-?':
+				return memory.syntax(0);
+			case '--base':
+			case '-b':
+				break;
+			case '--precision':
+			case '-p':
+				break;
+			case '--locale':
+			case '--radix':
+			case '-l':
+			case '-r':
+				break;
+			case '--scientific':
+			case '-s':
+				break;
+			case '--spaces':
+			case '-S':
+				break;
+			case '--eol':
+			case '-E':
+				break;
+			case '--fields':
+			case '-f':
+				break;
+			case '--easy':
+			case '-e':
+				break;
+		}
+	}
+};
+
 memory.start = () => {
 	const	params = memory.getCmdLineParams(),
 		result = memory.getMemoryInfo(params);
@@ -440,6 +439,10 @@ memory.start = () => {
 };
 
 //
+export default memory;
+import os from 'node:os';
+import fs from 'node:fs';
+
 if(DEFAULT_START)
 {
 	memory.start();
