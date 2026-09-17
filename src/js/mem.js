@@ -3,7 +3,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/mem/
- * v0.4.1
+ * v0.4.2
  */
 
 /*
@@ -24,14 +24,8 @@ const
 	DEFAULT_SPACES = true,
 	DEFAULT_EOL = true;
 const
-	DEFAULT_START = true,
-	// if only "MemAvailable", we'll use the `(node:os).freemem()`!
-	DEFAULT_FILE = '/proc/meminfo',
-	DEFAULT_FILE_ENCODING = 'utf8',
-	DEFAULT_FILE_SIZE_SUFFIX = ' kB',
-	DEFAULT_FILE_BASE = 1024,
-	DEFAULT_ZERO = true,
-	DEFAULT_EASY = false,
+	DEFAULT_ZERO = false,
+	DEFAULT_ALL = false,
 	DEFAULT_FIELDS = [
 		'MemTotal',
 		'MemFree',
@@ -39,12 +33,23 @@ const
 		'SwapTotal',
 		'SwapFree'
 	];
+const
+	DEFAULT_START = true,
+	// if only "MemAvailable" => (node:os).freemem();
+	DEFAULT_FILE = '/proc/meminfo',
+	DEFAULT_FILE_ENCODING = 'utf8',
+	DEFAULT_FILE_SIZE_SUFFIX = ' kB',
+	DEFAULT_FILE_BASE = 1024;
 
 //
-if(DEFAULT_EASY)
+if(DEFAULT_ALL === null)
 {
 	DEFAULT_FIELDS.length = 1;
 	DEFAULT_FIELDS[0] = 'MemAvailable';
+}
+else if(DEFAULT_ALL)
+{
+	DEFAULT_FIELDS.length = 0;
 }
 
 //
@@ -232,11 +237,6 @@ memory.syntax = (_exit = null) => {
 };
 
 memory.getMemoryInfo = (_params) => {
-	if(FIELDS.size === 0)
-	{
-		FIELDS.add('MemAvailable');
-	}
-
 	if(FIELDS.size === 1 && FIELDS.has('MemAvailable'))
 	{
 		// *bewusst* *nicht* "MemAvailable". zur unterscheidung. ;-) ...
@@ -286,8 +286,8 @@ memory.getMemoryInfo = (_params) => {
 		}
 
 		info[i][0] = info[i][0].trim();
-		
-		if(!FIELDS.has(info[i][0]))
+
+		if(FIELDS.size > 0 && !FIELDS.has(info[i][0]))
 		{
 			continue;
 		}
@@ -340,7 +340,8 @@ memory.showFreeMemory = (_value = os.freemem(), _params, _key, _pad = _key.lengt
 		spaces: DEFAULT_SPACES,
 		eol: DEFAULT_EOL,
 		fields: DEFAULT_FIELDS,
-		default: DEFAULT_ENV },
+		zero: DEFAULT_ZERO,
+		all: DEFAULT_ALL },
 			_params);
 	 */
 
@@ -359,9 +360,9 @@ memory.getCmdLineParams = (_vector = process.argv, _start = 2) => {
 		scientific: null,
 		spaces: null,
 		eol: null,
-		full: null,
 		fields: [],
-		easy: null };
+		zero: null,
+		all: null };
 	
 	for(var i = _start, b = 0; i < _vector.length; ++i)
 	{
