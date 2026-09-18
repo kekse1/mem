@@ -3,7 +3,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.1
+ * v2.0.2
  */
 
 /*
@@ -565,17 +565,9 @@ meminfo.getParameters = () => {
 				return process.exit(3);
 			}
 		}
-		else if(process.argv[i][0] === '@')
+		else if(process.argv[i][0] === '@' && (item = process.argv[i].substr(1)).isNumeric)
 		{
-			if((item = process.argv[i].substr(1)).isNumeric && Number.isRadix(item = Number(item)))
-			{
-				result.radix = item;
-			}
-			else
-			{
-				console.error('Your radix is not valid!');
-				return process.exit(12);
-			}
+			result.radix = Number(item);
 		}
 		else if(process.argv[i][0] === '=' && (item = process.argv[i].substr(1)).isNumeric)
 		{
@@ -606,12 +598,18 @@ meminfo.getParameters = () => {
 		}
 	}
 	
+	if(typeof result.radix === 'number' && !Number.isRadix(result.radix))
+	{
+		console.error('Your radix is not valid!');
+		return process.exit(12);
+	}
+
 	if(typeof result.base === 'number' && !Number.isBase(result.base))
 	{
 		console.error('Your base is not valid!');
 		return process.exit(13);
 	}
-
+	
 	return Object.assign(result, { presets, fields });
 };
 
