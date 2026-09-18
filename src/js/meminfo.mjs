@@ -384,7 +384,7 @@ if(!globalThis[kekse1])
 			return null;
 		}
 		
-		if(Math.abs(_value) < 2)
+		if(Math.abs(_value) <= 1)
 		{
 			return false;
 		}
