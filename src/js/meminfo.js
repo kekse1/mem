@@ -579,7 +579,7 @@ meminfo.getParameters = () => {
 		}
 		else if(process.argv[i][0] === '=' && (item = process.argv[i].substr(1)).isNumeric)
 		{
-			result.base = item;
+			result.base = Number(item);
 		}
 		else if(process.argv[i].isNumeric)
 		{
