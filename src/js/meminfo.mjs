@@ -406,7 +406,8 @@ const
 	DEFAULT_FILE = '/proc/meminfo',
 	DEFAULT_FILE_BASE = 1024,
 	DEFAULT_ENCODING = 'utf8',
-	DEFAULT_SUFFIX = ' kB';
+	DEFAULT_SUFFIX = ' kB',
+	DEFAULT_FILE_POW = 1;
 const
 	DEFAULT_START = true;
 const
@@ -677,7 +678,9 @@ meminfo.getData = (_errors = true) => {
 
 			if(value.isNumeric)
 			{
-				value = Number(value * DEFAULT_FILE_BASE);
+				value = Number(value *
+					DEFAULT_FILE_BASE **
+					DEFAULT_FILE_POW);
 				value = meminfo.size(value, ARGS);
 			}
 		}
