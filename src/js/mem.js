@@ -41,7 +41,7 @@ const
 	DEFAULT_SPACES = true,
 	DEFAULT_EOL = true;
 var	//TODO/w/ options/etc....!!
-	DEFAULT_RAW = true,
+	DEFAULT_RAW = false,
 	DEFAULT_ZERO = false,
 	DEFAULT_ALL = false,
 	DEFAULT_FIELDS = [
