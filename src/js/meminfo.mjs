@@ -464,15 +464,14 @@ meminfo.getParameters = () => {
 	const	presets = [],
 		result = {},
 		fields = [];
-	var	fin = false,
-		item,
+	var	item,
 		key;
 
 	for(var i = 2, p = 0, f = 0; i < process.argv.length; ++i)
 	{
 		if(process.argv[i] === '--')
 		{
-			fin = true;
+			break;
 		}
 		else if(process.argv[i] === '+')
 		{
@@ -484,7 +483,7 @@ meminfo.getParameters = () => {
 				}
 			}
 		}
-		else if(process.argv[i][0] === '-' && !fin)
+		else if(process.argv[i][0] === '-')
 		{
 			switch(process.argv[i])
 			{
