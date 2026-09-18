@@ -504,7 +504,7 @@ meminfo.getParameters = () => {
 						return process.exit(4);
 				}
 				
-				if(item && item[0] === '-')
+				if(item && (item[0] === '-' || item[0] === '@' || item[0] === '='))
 				{
 					item = '';
 					--i;
