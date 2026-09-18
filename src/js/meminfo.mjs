@@ -140,23 +140,21 @@ if(!globalThis[kekse1])
 		const	UNIT = Math.size.units;
 		var	rest = _value,
 			index = 0,
-			maxIndex;
+			maxIndex,
+			hasBase;
 
 		if(_base === 1000 || _base === 1024)
 		{
 			maxIndex = (UNIT.length - 1);
+			hasBase = true;
 		}
 		else
 		{
-			maxIndex = null;
+			maxIndex = Infinity;
+			hasBase = false;
 		}
 
-		if(maxIndex === null) while(rest >= _base)
-		{
-			rest /= _base;
-			++index;
-		}
-		else while(rest >= _base && index < maxIndex)
+		while(rest >= _base && index < maxIndex)
 		{
 			rest /= _base;
 			++index;
@@ -186,10 +184,7 @@ if(!globalThis[kekse1])
 			}
 		}
 
-		const	UNITS = (maxIndex === null ? null :
-				Object.keys(UNIT[index]));
-
-		if(UNITS === null || !UNITS.includes(_base.toString()))
+		if(!hasBase)
 		{
 			const mul = (_scientific ? '×' : '*');
 			const space = (_spaces ? ' ' : '');
