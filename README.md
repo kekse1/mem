@@ -16,7 +16,7 @@ they still need documentation here and in the `meminfo.syntax()` `--help` functi
 ## Download
 Implemented in plain Vanilla JavaScript, **without any dependencies**.
 
-* [Version v**2.0.6**](./src/js/meminfo.mjs) (updated **2026-09-18**);
+* [Version v**2.0.7**](./src/js/meminfo.mjs) (updated **2026-09-18**);
 
 <br><br>
 

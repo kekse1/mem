@@ -4,7 +4,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.6
+ * v2.0.7
  */
 
 /*
@@ -464,11 +464,27 @@ meminfo.getParameters = () => {
 	const	presets = [],
 		result = {},
 		fields = [];
-	var	item, key;
+	var	fin = false,
+		item,
+		key;
 
 	for(var i = 2, p = 0, f = 0; i < process.argv.length; ++i)
 	{
-		if(process.argv[i][0] === '-')
+		if(process.argv[i] === '--')
+		{
+			fin = true;
+		}
+		else if(process.argv[i] === '+')
+		{
+			for(const pre of PRESETS)
+			{
+				if(!presets.includes(pre))
+				{
+					presets[p++] = pre;
+				}
+			}
+		}
+		else if(process.argv[i][0] === '-' && !fin)
 		{
 			switch(process.argv[i])
 			{
