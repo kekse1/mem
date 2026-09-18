@@ -4,7 +4,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.3
+ * v2.0.4
  */
 
 /*
@@ -137,12 +137,26 @@ if(!globalThis[kekse1])
 			_base = DEFAULT_BASE;
 		}
 
-		const	UNIT = Math.size.units,
-			UNITS = UNIT.length;
+		const	UNIT = Math.size.units;
 		var	rest = _value,
-			index = 0;
+			index = 0,
+			maxIndex;
 
-		while(rest >= _base && index < (UNITS - 1))
+		if(_base === 1000 || _base === 1024)
+		{
+			maxIndex = (UNIT.length - 1);
+		}
+		else
+		{
+			maxIndex = null;
+		}
+
+		if(maxIndex === null) while(rest >= _base)
+		{
+			rest /= _base;
+			++index;
+		}
+		else while(rest >= _base && index < maxIndex)
 		{
 			rest /= _base;
 			++index;
@@ -171,8 +185,11 @@ if(!globalThis[kekse1])
 				result = '(' + _radix + ')' + result;
 			}
 		}
-		
-		if(!UNIT[index][_base])
+
+		const	UNITS = (maxIndex === null ? null :
+				Object.keys(UNIT[index]));
+
+		if(UNITS === null || !UNITS.includes(_base.toString()))
 		{
 			const mul = (_scientific ? '×' : '*');
 			const space = (_spaces ? ' ' : '');
@@ -193,7 +210,7 @@ if(!globalThis[kekse1])
 		{ 1000: 'ZB', 1024: 'ZiB' },
 		{ 1000: 'YB', 1024: 'YiB' }
 	];
-	
+
 	Reflect.defineProperty(Math, '_round', { value: Math.round });
 	Reflect.defineProperty(Math, 'round', { value: (_value, _precision = 0) => {
 		if(!Number.isFinite(_precision) || _precision <= 0)
