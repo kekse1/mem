@@ -3,7 +3,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.2
+ * v2.0.3
  */
 
 /*
@@ -334,9 +334,14 @@ if(!globalThis[kekse1])
 			return !!_item;
 		}
 		
-		if(typeof _item !== 'string' || !(_item = _item.trim()));
+		if(typeof _item !== 'string')
 		{
 			return null;
+		}
+		
+		if(!(_item = _item.trim()))
+		{
+			return true;
 		}
 		
 		switch(_item = _item.toLowerCase())
@@ -484,7 +489,7 @@ meminfo.getParameters = () => {
 
 				if(!item)
 				{
-					if(i === (process.argv.length - 1) && (key === 'locale' || key === 'show'))
+					if(i === process.argv.length && (key === 'locale' || key === 'show'))
 					{
 						if(key === 'locale')
 						{
@@ -504,7 +509,7 @@ meminfo.getParameters = () => {
 				if(key === 'show')
 				{
 					item = Boolean.parse(item);
-					
+
 					if(typeof item !== 'boolean')
 					{
 						console.error('Expecting a numeric or boolean ' +
