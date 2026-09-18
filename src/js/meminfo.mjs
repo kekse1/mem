@@ -1,4 +1,5 @@
-#!/usr/bin/env -S node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON
+#!/usr/bin/env node
+//#!/usr/bin/env -S node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON
 
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
