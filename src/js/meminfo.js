@@ -3,7 +3,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.0
+ * v2.0.1
  */
 
 /*
@@ -366,7 +366,7 @@ if(!globalThis[kekse1])
 			return null;
 		}
 		
-		if((_value = Math.abs(_value)) < 2 || !_value)
+		if(Math.abs(_value) < 2)
 		{
 			return false;
 		}
@@ -558,10 +558,6 @@ meminfo.getParameters = () => {
 						break;
 				}
 			}
-			else if(item.isNumeric)
-			{
-				result.base = Number(item);
-			}
 			else
 			{
 				console.error('Unknown parameter `' +
@@ -580,6 +576,10 @@ meminfo.getParameters = () => {
 				console.error('Your radix is not valid!');
 				return process.exit(12);
 			}
+		}
+		else if(process.argv[i][0] === '=' && (item = process.argv[i].substr(1)).isNumeric)
+		{
+			result.base = item;
 		}
 		else if(process.argv[i].isNumeric)
 		{
