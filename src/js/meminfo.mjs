@@ -17,7 +17,10 @@
  * so it runs 'as is'!
  *
  *
+ *
  * TODO * the `meminfo.syntax()` `--help` output needs to be done.
+ * TODO * specific `--unit`. maybe even `--index`!
+ *
  *
  */
 
