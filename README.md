@@ -59,6 +59,37 @@ optionally user defined fields).
 > Just a merely 'hard-coded' `meminfo.getParameters()` function for only the
 > parameters used in here.
 
+### Numbers
+Defining the default `--locale` will use `.toLocaleString()`.
+
+Using `--locale no` (or `off` or `false`) will use `.toFixed(--prec[ision])`
+(w/ `--precision 4` as current default).
+
+If you want your decimal output without fixed fraction amount, you can just
+use `--radix 10` or `@10`. All other `--radix` (Integer [ 2 .. 36 ]) will
+be `--show`n (like a cast), or disable such prefix using `--show off`.
+
+<br>
+
+### Base
+The `--base` (or `=` or just the number) can also be used with any number,
+including floating point values. You'll see it in your output!
+
+The only limit is `Math.abs() > 1`.
+
+<br>
+
+### Unit or Index
+Normally the chosen unit is adjusted by the size.
+
+You can fix the output unit by `--unit`. Either with one character, whereas
+the base (1000/1024) is changed by the upper or lower case state of your char.
+Or use two to three chars like `mib` for Mibibyte (base 1024) and `mb` for
+Megabyte (base 1000).
+
+Especially for your own bases (but also for both regular ones) you can use
+the `--index` to set a special (division) index. Like `--index 2` for K(i)B.
+
 <br><br>
 
 ## Example Screenshots
