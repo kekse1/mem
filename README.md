@@ -76,7 +76,7 @@ v**2**
 	</summary>
 
 	v**1**
-	![v1](./img/mem.png)
+    <img src="./img/mem.png" alt="v1 (old, original code base)" />
 </details>
 
 <br><br><br>
