@@ -4,7 +4,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.8
+ * v2.0.9
  */
 
 /*
@@ -19,12 +19,17 @@
  *
  *
  *
- * TODO * the `meminfo.syntax()` `--help` output needs to be done.
+ *
+ * TODO * the `meminfo.help()` `--help` output needs to be done.
+ *
  * TODO * specific `--unit`. maybe even `--index`!
  *	=> .size(..., _base => als unit... dort getIndex()); ..
- *		ODER EHER extra "_index", w/ .size.getIndex(unit); ...
- * TODO * Math.size() => ONLY _options{}, not all the `arguments`..! :-)
+ *		BEST: extra {index} option, w/ .size.getIndex(_unit, _base); ...
+ * 
  * TODO * Math.size() => BigInt support! PLEASE CALCULATE WITH IT, NO CAST!!1 ...
+ *		maybe first check if below Number.MAX_SAFE_INTEGER for current version,
+ *		... etc.. THINK ABOUT IT: BigInt won't allow floating point results..
+ *		and that's BAD for real base conversions...! :-/
  *
  *
  *
@@ -37,8 +42,7 @@ const
 	DEFAULT_RADIX = true,
 	DEFAULT_SCIENTIFIC = true,
 	DEFAULT_SPACES = true,
-	DEFAULT_SHOW = true,
-	DEFAULT_BASE_FLOAT = true;
+	DEFAULT_SHOW = true;
 
 //
 const	kekse1 = Symbol.for(
@@ -55,8 +59,20 @@ if(!globalThis[kekse1])
 	//THIS IS A QUICK-AND-DIRTY VERSION... just re-wrote it new (from scratch) for only this `meminfo` purpose..
 	//you can find better versions (maybe) at < https://github.com/kekse1/radix/ > ... etc. pp.. ^_^ ...
 	//
-	Reflect.defineProperty(Math, 'size', { value: (_value, _base = DEFAULT_BASE, _precision = DEFAULT_PRECISION, _radix = DEFAULT_RADIX, _scientific = DEFAULT_SCIENTIFIC, _spaces = DEFAULT_SPACES, _show = DEFAULT_SHOW) => {
-		const negative = (_value < 0);
+	// _options{ base, index, precision, radix, scientific, spaces, show };
+	//
+	Reflect.defineProperty(Math, 'size', { value: (_value, _options) => {
+		if(typeof _value === 'bigint')
+		{
+			throw new Error('todo');
+		}
+		else if(!Number.isFinite(_value))
+		{
+			throw new Error('Invalid _value argument (not a real number)');
+		}
+
+		const	negative = (_value < 0),
+			UNIT = Math.size.units;
 		_value = Math.abs(_value);
 		
 		if(!_value)
@@ -68,150 +84,170 @@ if(!globalThis[kekse1])
 			return ((negative ? '-' : '') + '1 Byte');
 		}
 		
-		if(typeof _base === 'object' && _base !== null)
-		{
-			if(typeof _base.show === 'boolean')
+		(() => {
+			if(typeof _options !== 'object' || _options === null)
 			{
-				_show = _base.show;
+				_options = {};
 			}
 			
-			if(typeof _base.spaces === 'boolean')
+			if(typeof _options.base === 'boolean')
 			{
-				_spaces = _base.spaces;
+				_options.base = (_options.base ? 1024 : 1000);
 			}
-
-			if(typeof _base.scientific === 'boolean')
+			else if(Number.isFinite(_options.base))
 			{
-				_scientific = _base.scientific;
-			}
-			
-			if(typeof _base.radix === 'boolean' || Number.isFinite(_base.radix))
-			{
-				_radix = _base.radix;
-			}
-			
-			if(Number.isFinite(_base.precision))
-			{
-				_precision = _base.precision;
-			}
-			
-			if(typeof _base.base === 'boolean' || Number.isFinite(_base.base))
-			{
-				_base = _base.base;
+				if(!Number.isBase(_options.base))
+				{
+					throw new Error('Invalid {base} option');
+				}
 			}
 			else
 			{
-				_base = DEFAULT_BASE;
+				_options.base = DEFAULT_BASE;
 			}
-		}
-
-		if(typeof _show !== 'boolean')
-		{
-			_show = DEFAULT_SHOW;
-		}
-		
-		if(typeof _spaces !== 'boolean')
-		{
-			_spaces = DEFAULT_SPACES;
-		}
-		
-		if(typeof _scientific !== 'boolean')
-		{
-			_scientific = DEFAULT_SCIENTIFIC;
-		}
-		
-		if(typeof _radix === 'number')
-		{
-			if(!Number.isRadix(_radix))
+			
+			if(_options.index !== null)
 			{
-				throw new Error('Invalid radix/locale argument');
+				if(Number.isFinite(_options.index))
+				{
+					_options.index = Math.trunc(
+						Math.abs(_options.index));
+
+					if(Math.size.isRegularBase(_options.base))
+					{
+						_options.index = Math.min(
+							_options.index,
+							UNIT.length);
+					}
+				}
+				else
+				{
+					_options.index = null;
+				}
 			}
-		}
-		else if(typeof _radix !== 'boolean')
+			
+			if(Number.isFinite(_options.precision))
+			{
+				_options.precision = Math.trunc(
+					Math.abs(_options.precision));
+			}
+			else
+			{
+				_options.precision = DEFAULT_PRECISION;
+			}
+			
+			if(typeof _options.radix !== 'boolean')
+			{
+				if(Number.isFinite(_options.radix))
+				{
+					if(!Number.isRadix(_options.radix))
+					{
+						throw new Error('Invalid {radix} option');
+					}
+				}
+				else
+				{
+					_options.radix = DEFAULT_RADIX;
+				}
+			}
+			
+			if(typeof _options.scientific !== 'boolean')
+			{
+				_options.scientific = DEFAULT_SCIENTIFIC;
+			}
+			
+			if(typeof _options.spaces !== 'boolean')
+			{
+				_options.spaces = DEFAULT_SPACES;
+			}
+			
+			if(typeof _options.show !== 'boolean')
+			{
+				_options.show = DEFAULT_SHOW;
+			}
+		})();
+		
+		if(_options.index === 0)
 		{
-			_radix = DEFAULT_RADIX;
+			return (_value + ' Bytes');
+		}
+		else if(_options.index !== null)
+		{
+			throw new Error('TODO');
 		}
 		
-		if(!Number.isFinite(_precision))
-		{
-			_precision = DEFAULT_PRECISION;
-		}
-
-		if(typeof _base === 'boolean')
-		{
-			_base = (_base ? 1024 : 1000);
-		}
-		else if(Number.isFinite(_base))
-		{
-			if(!Number.isBase(_base))
-			{
-				throw new Error('Invalid base parameter [ 2 .. ]');
-			}
-		}
-		else
-		{
-			_base = DEFAULT_BASE;
-		}
-
-		const	UNIT = Math.size.units;
 		var	rest = _value,
+			regularBase,
 			index = 0,
-			maxIndex,
-			hasBase;
+			maxIndex;
 
-		if(_base === 1000 || _base === 1024)
+		if(Math.size.isRegularBase(_options.base))
 		{
 			maxIndex = (UNIT.length - 1);
-			hasBase = true;
+			regularBase = true;
 		}
 		else
 		{
 			maxIndex = Infinity;
-			hasBase = false;
+			regularBase = false;
 		}
 
-		while(rest >= _base && index < maxIndex)
+		while(rest >= _options.base && index < maxIndex)
 		{
-			rest /= _base;
+			rest /= _options.base;
 			++index;
 		}
 
-		rest = Math.round(rest, _precision);
+		rest =	Math.round(rest, _options.precision);
 		var	result;
 
-		if(typeof _radix === 'boolean')
+		if(typeof _options.radix === 'boolean')
 		{
-			if(_radix)//&& rest >= 1000; ..
+			if(_options.radix)//&& rest >= 1000; ..
 			{
 				result = rest.toLocaleString();
 			}
 			else
 			{
-				result = rest.toFixed(_precision);
+				result = rest.toFixed(
+					_options.precision);
 			}
 		}
 		else
 		{
-			result = rest.toString(_radix);
+			result = rest.toString(_options.radix);
 			
-			if(_radix !== 10 && _show)
+			if(_options.radix !== 10 && _options.show)
 			{
-				result = '(' + _radix + ')' + result;
+				result = '(' + _options.radix + ')' + result;
 			}
 		}
 
-		if(!hasBase)
+		if(!regularBase)
 		{
-			const mul = (_scientific ? '×' : '*');
-			const space = (_spaces ? ' ' : '');
+			const mul = (_options.scientific ? '×' : '*');
+			const space = (_options.spaces ? ' ' : '');
 			return ((negative ? '-' : '') + (result +
-				space + mul + space + _base +
-				'^' + index));
+				space + mul + space +
+				_options.base + '^' + index));
 		}
 		
 		return ((negative ? '-' : '') + (result +
-				' ' + UNIT[index][_base]));
+			' ' + UNIT[index][_options.base]));
 	}});
+
+	Math.size.getIndex = (_unit, _base) => {
+throw new Error('TODO');
+	};
+	
+	Math.size.isRegularBase = (_base) => {
+		if(!Number.isFinite(_base))
+		{
+			return null;
+		}
+		
+		return (_base === 1024 || _base === 1000);
+	};
 
 	Math.size.units = [
 		{ 1000: 'Bytes', 1024: 'Bytes' },
@@ -225,6 +261,7 @@ if(!globalThis[kekse1])
 		{ 1000: 'YB', 1024: 'YiB' }
 	];
 
+	//
 	Reflect.defineProperty(Math, '_round', { value: Math.round });
 	Reflect.defineProperty(Math, 'round', { value: (_value, _precision = 0) => {
 		if(!Number.isFinite(_precision) || _precision <= 0)
@@ -408,10 +445,13 @@ if(!globalThis[kekse1])
 			return false;
 		}
 		
-		if(!DEFAULT_BASE_FLOAT && (_value % 1) !== 0)
+		//
+		// now i allow all bases, including floating point values! :-)
+		//
+		/*if(!DEFAULT_BASE_FLOAT && (_value % 1) !== 0)
 		{
 			return false;
-		}
+		}*/
 		
 		return true;
 	}});
@@ -446,11 +486,12 @@ meminfo.size = (_value, _options = ARGS) => Math.
 			radix: DEFAULT_RADIX,
 			show: DEFAULT_SHOW,
 			scientific: DEFAULT_SCIENTIFIC,
-			spaces: DEFAULT_SPACES
+			spaces: DEFAULT_SPACES,
+			index: null
 		}, _options));
 
 //
-meminfo.syntax = (_exit = null) => {
+meminfo.help = (_exit = null) => {
 	//
 	//TODO/see also `meminfo.getParameters()`!1
 	//
@@ -466,8 +507,9 @@ meminfo.syntax = (_exit = null) => {
 
 //
 // [ 'prec', 'precision', 'base', 'radix', 'locale', 'show' ];
+// TODO: [ 'index', 'unit' ]; ... see `Math.size()`.
 //
-//TODO/HELP @ `meminfo.syntax()`!1
+//TODO/HELP @ `meminfo.help()`!1
 //
 meminfo.getParameters = () => {
 	const	presets = [],
@@ -476,6 +518,17 @@ meminfo.getParameters = () => {
 	var	item,
 		key;
 
+	for(var i = 2; i < process.argv.length; ++i)
+	{
+		switch(process.argv[i])
+		{
+			case '--help':
+			case '-h':
+			case '-?':
+				return meminfo.help(0);
+		}
+	}
+	
 	for(var i = 2, p = 0, f = 0; i < process.argv.length; ++i)
 	{
 		if(process.argv[i] === '--')
@@ -494,12 +547,6 @@ meminfo.getParameters = () => {
 		}
 		else if(process.argv[i][0] === '-')
 		{
-			switch(process.argv[i])
-			{
-				case '--help': case '-h': case '-?':
-					return meminfo.syntax(0);
-			}
-
 			item = process.argv[i].substr(1);
 			
 			if(item[0] === '-')
