@@ -42,7 +42,7 @@ directly (without any space or stuff):
 
 **Numeric** parameters will be treated like `=` or the `--base`.
 
-**Upper Case** parameters are "presets". You can define more than one.
+**Upper Case** parameters are "**presets**". You can define more than one.
 They set combinations of `/proc/meminfo` fields. See also the `const PRESETS[]`
 (currently supported `MEM` and `SWAP`).
 
