@@ -50,7 +50,7 @@ They set combinations of `/proc/meminfo` fields. See also the `const PRESETS[]`
 (currently supported `MEM` and `SWAP`).
 
 All other parameters define fields of `/proc/meminfo`. They can also be pure lower case;
-if you define non-existing ones, it'll show an error for it.
+if you define non-existing ones, it'll (also) inform you about your mistake.
 
 Last but not least: defining a `+` argument will include ALL presets.
 
