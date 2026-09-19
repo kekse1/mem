@@ -19,7 +19,7 @@ in the script); they still need some documentation in the
 ## Download
 Implemented in plain Vanilla JavaScript, **without any dependencies**.
 
-* [Version v**2.1.1**](./src/js/meminfo.mjs) (updated **2026-09-19**);
+* [Version v**2.1.2**](./src/js/meminfo.mjs) (updated **2026-09-19**);
 
 <br><br>
 
@@ -71,8 +71,9 @@ Using `--locale no` (or `off` or `false`) will use `.toFixed()` (w/ a
 `--precision 4` as current default).
 
 If you want your decimal output without fixed fraction amount, you can just
-use `--radix 10` or `@10`. All other `--radix` (Integer [ 2 .. 36 ]) will
-be `--show`n (like a cast), or disable such prefix using `--show off`.
+use `--radix 10` or `@10` (or simply one `@`). All other `--radix` (Integer
+[ 2 .. 36 ]) will be `--show`n (like a cast), or disable such prefix using
+`--show off`.
 
 <br>
 
