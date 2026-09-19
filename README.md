@@ -4,8 +4,11 @@
 # `meminfo`
 Will present you your `/proc/meminfo` in a more clean/better way.
 
-There are also some (command line) options (plus some `const DEFAULT*` in the script);
-they still need documentation here and in the `meminfo.syntax()` `--help` function!
+There are also some (command line) options (plus some `const DEFAULT*`
+in the script); they still need some documentation in the
+`meminfo.syntax()` `--help / -? / -h` function!
+
+<br>
 
 > [!NOTE]
 > Later I'll also try to implement it as pure `bash` shell script.
