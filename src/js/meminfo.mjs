@@ -169,7 +169,8 @@ if(!globalThis[kekse1])
 		
 		if(_options.index === 0)
 		{
-			return (_value + ' Bytes');
+			return ((negative ? '-' : '') +
+				(_value + ' Bytes'));
 		}
 		else if(_options.index !== null)
 		{
