@@ -90,7 +90,7 @@ Or use two to three chars like `mib` for Mibibyte (base 1024) and `mb` for
 Megabyte (base 1000).
 
 Especially for your own bases (but also for both regular ones) you can use
-the `--index` to set a special (division) index. Like `--index 2` for K(i)B.
+the `--index` to set a special (division) index. Like `--index 1` for K(i)B.
 
 <br><br>
 
