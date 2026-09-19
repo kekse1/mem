@@ -4,7 +4,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.9
+ * v2.1.0
  */
 
 /*
@@ -22,10 +22,6 @@
  *
  * TODO * the `meminfo.help()` `--help` output needs to be done.
  *
- * TODO * specific `--unit`. maybe even `--index`!
- *	=> .size(..., _base => als unit... dort getIndex()); ..
- *		BEST: extra {index} option, w/ .size.getIndex(_unit, _base); ...
- * 
  * TODO * Math.size() => BigInt support! PLEASE CALCULATE WITH IT, NO CAST!!1 ...
  *		maybe first check if below Number.MAX_SAFE_INTEGER for current version,
  *		... etc.. THINK ABOUT IT: BigInt won't allow floating point results..
@@ -38,7 +34,7 @@
 //
 const
 	DEFAULT_BASE = 1024,
-	DEFAULT_PRECISION = 2,
+	DEFAULT_PRECISION = 4,
 	DEFAULT_RADIX = true,
 	DEFAULT_SCIENTIFIC = true,
 	DEFAULT_SPACES = true,
@@ -90,39 +86,54 @@ if(!globalThis[kekse1])
 				_options = {};
 			}
 			
-			if(typeof _options.base === 'boolean')
+			if(typeof _options.unit === 'string')
 			{
-				_options.base = (_options.base ? 1024 : 1000);
-			}
-			else if(Number.isFinite(_options.base))
-			{
-				if(!Number.isBase(_options.base))
+				const unit = Math.size.findUnit(_options.unit);
+				
+				if(unit === null)
 				{
-					throw new Error('Invalid {base} option');
+					throw new Error('Unknown unit `' + unit + '`.');
 				}
+				
+				_options.index = unit[0];
+				_options.base = unit[1];
 			}
 			else
 			{
-				_options.base = DEFAULT_BASE;
-			}
-			
-			if(_options.index !== null)
-			{
-				if(Number.isFinite(_options.index))
+				if(typeof _options.base === 'boolean')
 				{
-					_options.index = Math.trunc(
-						Math.abs(_options.index));
-
-					if(Math.size.isRegularBase(_options.base))
+					_options.base = (_options.base ? 1024 : 1000);
+				}
+				else if(Number.isFinite(_options.base))
+				{
+					if(!Number.isBase(_options.base))
 					{
-						_options.index = Math.min(
-							_options.index,
-							UNIT.length);
+						throw new Error('Invalid {base} option');
 					}
 				}
 				else
 				{
-					_options.index = null;
+					_options.base = DEFAULT_BASE;
+				}
+
+				if(_options.index !== null)
+				{
+					if(Number.isFinite(_options.index))
+					{
+						_options.index = Math.trunc(
+							Math.abs(_options.index));
+
+						if(Math.size.isRegularBase(_options.base))
+						{
+							_options.index = Math.min(
+								_options.index,
+								UNIT.length);
+						}
+					}
+					else
+					{
+						_options.index = null;
+					}
 				}
 			}
 			
@@ -166,15 +177,11 @@ if(!globalThis[kekse1])
 				_options.show = DEFAULT_SHOW;
 			}
 		})();
-		
+
 		if(_options.index === 0)
 		{
 			return ((negative ? '-' : '') +
 				(_value + ' Bytes'));
-		}
-		else if(_options.index !== null)
-		{
-			throw new Error('TODO');
 		}
 		
 		var	rest = _value,
@@ -193,7 +200,12 @@ if(!globalThis[kekse1])
 			regularBase = false;
 		}
 
-		while(rest >= _options.base && index < maxIndex)
+		if(_options.index === null) while(rest >= _options.base && index < maxIndex)
+		{
+			rest /= _options.base;
+			++index;
+		}
+		else while(index < _options.index)
 		{
 			rest /= _options.base;
 			++index;
@@ -237,10 +249,6 @@ if(!globalThis[kekse1])
 			' ' + UNIT[index][_options.base]));
 	}});
 
-	Math.size.getIndex = (_unit, _base) => {
-throw new Error('TODO');
-	};
-	
 	Math.size.isRegularBase = (_base) => (
 		_base === 1000 || _base === 1024);
 
@@ -255,6 +263,66 @@ throw new Error('TODO');
 		{ 1000: 'ZB', 1024: 'ZiB' },
 		{ 1000: 'YB', 1024: 'YiB' }
 	];
+
+	Math.size.findUnit = (_unit) => {
+		if(typeof _unit !== 'string')
+		{
+			return null;
+		}
+
+		if(!(_unit = _unit.trim()) || _unit[0].toLowerCase() === 'b')
+		{
+			return [ 0, 1000 ];
+		}
+
+		const	UNIT = Math.size.units;
+		var	base;
+
+		if(_unit.length === 1)
+		{
+			if(_unit.isLowerCase)
+			{
+				base = 1000;
+			}
+			else
+			{
+				base = 1024;
+			}
+
+			_unit = _unit.toLowerCase();
+
+			for(var i = 0; i < UNIT.length; ++i)
+			{
+				if(UNIT[i][base][0].toLowerCase() === _unit)
+				{
+					return [ i, base ];
+				}
+			}
+			
+			return null;
+		}
+
+		if((_unit = _unit.substr(0, 2).toLowerCase()).includes('i'))
+		{
+			base = 1024;
+		}
+		else
+		{
+			base = 1000;
+		}
+
+		_unit =	_unit[0];
+
+		for(var i = 0; i < UNIT.length; ++i)
+		{
+			if(UNIT[i][base][0].toLowerCase() === _unit)
+			{
+				return [ i, base ];
+			}
+		}
+
+		return null;
+	};
 
 	//
 	Reflect.defineProperty(Math, '_round', { value: Math.round });
@@ -450,6 +518,9 @@ throw new Error('TODO');
 		
 		return true;
 	}});
+
+	//
+
 }
 
 //
@@ -482,7 +553,8 @@ meminfo.size = (_value, _options = ARGS) => Math.
 			show: DEFAULT_SHOW,
 			scientific: DEFAULT_SCIENTIFIC,
 			spaces: DEFAULT_SPACES,
-			index: null
+			index: null,
+			unit: null
 		}, _options));
 
 //
@@ -501,8 +573,7 @@ meminfo.help = (_exit = null) => {
 };
 
 //
-// [ 'prec', 'precision', 'base', 'radix', 'locale', 'show' ];
-// TODO: [ 'index', 'unit' ]; ... see `Math.size()`.
+// [ 'prec', 'precision', 'base', 'radix', 'locale', 'show', 'unit', 'index' ];
 //
 //TODO/HELP @ `meminfo.help()`!1
 //
@@ -554,6 +625,8 @@ meminfo.getParameters = () => {
 					case 'radix':
 					case 'locale':
 					case 'show':
+					case 'index':
+					case 'unit':
 						if(key === 'prec')
 						{
 							key = 'precision';
@@ -623,33 +696,38 @@ meminfo.getParameters = () => {
 						}
 					}
 				}
+				else if(key === 'unit')
+				{
+					if(!(item = item.trim()))
+					{
+						console.error('Your `--unit` parameter needs a real (string) value.');
+						return process.exit(16);
+					}
+				}
+				else if(key === 'index')
+				{
+					if(item.isNumeric)
+					{
+						item = Number(item);
+					}
+					else
+					{
+						console.error('Your `--index` parameter needs a numeric value.');
+						return process.exit(17);
+					}
+				}
 				else if(!item.isNumeric && typeof item !== 'boolean')
 				{
 					console.error('Expecting a numeric value for ' +
 						'parameter `' + process.argv[i - 1] + '`.');
 					return process.exit(6);
 				}
-				
-				if(typeof item !== 'boolean')
+				else if(typeof item !== 'boolean')
 				{
 					item = Number(item);
 				}
-				
-				switch(key)
-				{
-					case 'precision':
-						result.precision = item;
-						break;
-					case 'base':
-						result.base = item;
-						break;
-					case 'radix':
-						result.radix = item;
-						break;
-					case 'show':
-						result.show = item;
-						break;
-				}
+
+				result[key] = item;
 			}
 			else
 			{
@@ -703,6 +781,23 @@ meminfo.getParameters = () => {
 		return process.exit(13);
 	}
 	
+	if(typeof result.unit === 'string')
+	{
+		if(typeof result.index === 'number')
+		{
+			console.error('You can\'t define BOTH `--unit` and `--index`.');
+			return process.exit(14);
+		}
+	}
+	else if(typeof result.index === 'number')
+	{
+		if(!Number.isFinite(result.index) || result.index < 0 || (result.index % 1) !== 0)
+		{
+			console.error('Your `--index` is not a valid positive integer.');
+			return process.exit(15);
+		}
+	}
+
 	return Object.assign(result, { presets, fields });
 };
 
