@@ -4,7 +4,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.1.0
+ * v2.1.1
  */
 
 /*
@@ -611,7 +611,7 @@ meminfo.getParameters = () => {
 				}
 			}
 		}
-		else if(process.argv[i][0] === '-')
+		else if(process.argv[i][0] === '-' && !process.argv[i][1].isNumeric)
 		{
 			item = process.argv[i].substr(1);
 			
@@ -643,7 +643,7 @@ meminfo.getParameters = () => {
 						return process.exit(4);
 				}
 				
-				if(item && (item[0] === '-' || item[0] === '@' || item[0] === '='))
+				if(item && (item[0] === '-' || item[0] === '@' || item[0] === '=') && !item[1].isNumeric)
 				{
 					item = '';
 					--i;
