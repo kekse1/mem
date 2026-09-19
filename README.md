@@ -55,6 +55,8 @@ if you define non-existing ones, it'll (also) inform you about your mistake.
 Last but not least: defining a `+` argument will include ALL presets (additionally to
 optionally user defined fields).
 
+<br><br>
+
 ## Example Screenshots
 Here are example screenshots of my utility.
 
