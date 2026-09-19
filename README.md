@@ -58,26 +58,16 @@ optionally user defined fields).
 ## Example Screenshots
 Here are example screenshots of my utility.
 
-### Current version v**2** (`meminfo`)
 This is my newest version, which was intended to be a better
 replacement for `cat /proc/meminfo` **only** (so it's renamed
 from `mem` to `meminfo` now).
 
+> [!INFO]
+> The [**old, original code base**](./src/js/v1/mem.js) is still available here,
+> including my [**older** screenshot](./img/mem.png).
+
 v**2**
 ![v2](./img/meminfo.png)
-
-### Original version v**1** (`mem`)
-<details>
-	<summary>[<b>click here</b> to expand]
-	This is my original, older implementation. It wasn't intended to be
-	a replacement for `cat /proc/meminfo`, so the output looks not the
-	same.. I previously used it (many times), but now I think the code
-	is also a bit to bloated, maybe. And a bit dirty.. etc.
-	</summary>
-
-	v**1**
-    <img src="./img/mem.png" alt="v1 (old, original code base)" />
-</details>
 
 <br><br><br>
 
