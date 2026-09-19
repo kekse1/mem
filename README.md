@@ -24,7 +24,7 @@ Implemented in plain Vanilla JavaScript, **without any dependencies**.
 <br><br>
 
 ## Command Line arguments
-There are few supported **argv[] parameters** (beneath possible `const DEFAULT_*`
+There are few supported **argv[] parameters** (beneath some `const DEFAULT_*`
 switches in the code); they still need a documentation (in the `meminfo.help()`
 function, and in here):
 
