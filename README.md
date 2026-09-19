@@ -75,7 +75,8 @@ be `--show`n (like a cast), or disable such prefix using `--show off`.
 
 ### Base
 The `--base` (or `=` or just the number) can also be used with any number,
-including floating point values. You'll see it in your output!
+including floating point values and negative ones (you'll see it in your
+output)!
 
 The only limit is `Math.abs() > 1`.
 
