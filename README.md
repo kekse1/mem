@@ -62,7 +62,6 @@ This is my newest version, which was intended to be a better
 replacement for `cat /proc/meminfo` **only** (so it's renamed
 from `mem` to `meminfo` now).
 
-v**2**
 ![v2](./img/meminfo.png)
 
 <br>
