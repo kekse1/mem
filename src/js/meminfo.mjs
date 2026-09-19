@@ -127,7 +127,7 @@ if(!globalThis[kekse1])
 						{
 							_options.index = Math.min(
 								_options.index,
-								UNIT.length);
+								UNIT.length - 1);
 						}
 					}
 					else
