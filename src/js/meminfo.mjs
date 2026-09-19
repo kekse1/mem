@@ -4,7 +4,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.7
+ * v2.0.8
  */
 
 /*
@@ -18,8 +18,14 @@
  *
  *
  *
+ *
  * TODO * the `meminfo.syntax()` `--help` output needs to be done.
  * TODO * specific `--unit`. maybe even `--index`!
+ *	=> .size(..., _base => als unit... dort getIndex()); ..
+ *		ODER EHER extra "_index", w/ .size.getIndex(unit); ...
+ * TODO * Math.size() => ONLY _options{}, not all the `arguments`..! :-)
+ * TODO * Math.size() => BigInt support! PLEASE CALCULATE WITH IT, NO CAST!!1 ...
+ *
  *
  *
  */
@@ -50,9 +56,16 @@ if(!globalThis[kekse1])
 	//you can find better versions (maybe) at < https://github.com/kekse1/radix/ > ... etc. pp.. ^_^ ...
 	//
 	Reflect.defineProperty(Math, 'size', { value: (_value, _base = DEFAULT_BASE, _precision = DEFAULT_PRECISION, _radix = DEFAULT_RADIX, _scientific = DEFAULT_SCIENTIFIC, _spaces = DEFAULT_SPACES, _show = DEFAULT_SHOW) => {
-		if(_value <= 0)
+		const negative = (_value < 0);
+		_value = Math.abs(_value);
+		
+		if(!_value)
 		{
 			return '0 Bytes';
+		}
+		else if(_value === 1)
+		{
+			return ((negative ? '-' : '') + '1 Byte');
 		}
 		
 		if(typeof _base === 'object' && _base !== null)
@@ -191,12 +204,15 @@ if(!globalThis[kekse1])
 		{
 			const mul = (_scientific ? '×' : '*');
 			const space = (_spaces ? ' ' : '');
-			return (result + space + mul + space + _base + '^' + index);
+			return ((negative ? '-' : '') + (result +
+				space + mul + space + _base +
+				'^' + index));
 		}
 		
-		return (result + ' ' + UNIT[index][_base]);
+		return ((negative ? '-' : '') + (result +
+				' ' + UNIT[index][_base]));
 	}});
-	
+
 	Math.size.units = [
 		{ 1000: 'Bytes', 1024: 'Bytes' },
 		{ 1000: 'KB', 1024: 'KiB' },
@@ -423,22 +439,15 @@ import	fs from 'node:fs';
 import	os from 'node:os';
 
 //
-meminfo.size = (_value, _options = ARGS) => {
-	_options = Object.assign({
+meminfo.size = (_value, _options = ARGS) => Math.
+	size(_value, Object.assign({
 			base: DEFAULT_BASE,
 			precision: DEFAULT_PRECISION,
 			radix: DEFAULT_RADIX,
-			show: DEFAULT_SHOW },
-		_options);
-
-	return Math.size(_value,
-		_options.base,
-		_options.precision,
-		_options.radix,
-		DEFAULT_SCIENTIFIC,
-		DEFAULT_SPACES,
-		_options.show);
-};
+			show: DEFAULT_SHOW,
+			scientific: DEFAULT_SCIENTIFIC,
+			spaces: DEFAULT_SPACES
+		}, _options));
 
 //
 meminfo.syntax = (_exit = null) => {
@@ -880,7 +889,8 @@ meminfo.handle = (_errors = true) => {
 	const data = meminfo.filterData(
 		meminfo.getData(_errors),
 		ARGS.fields, ARGS.presets);
-	const result = meminfo.prepareData(data);
+	const result = meminfo.
+		prepareData(data);
 	meminfo.printData(result);
 	return data;
 };
