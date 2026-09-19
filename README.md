@@ -72,7 +72,7 @@ v**2**
 
 ### Original version v**1** (`mem`)
 <details>
-	<summary>\[**click here** to expand\]
+	<summary>\[<b>click here</b> to expand\]
 	This is my original, older implementation. It wasn't intended to be
 	a replacement for `cat /proc/meminfo`, so the output looks not the
 	same.. I previously used it (many times), but now I think the code
