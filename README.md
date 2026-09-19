@@ -59,11 +59,13 @@ optionally user defined fields).
 > Just a merely 'hard-coded' `meminfo.getParameters()` function for only the
 > parameters used in here.
 
+<br>
+
 ### Numbers
 Defining the default `--locale` will use `.toLocaleString()`.
 
-Using `--locale no` (or `off` or `false`) will use `.toFixed(--prec[ision])`
-(w/ `--precision 4` as current default).
+Using `--locale no` (or `off` or `false`) will use `.toFixed()` (w/ a
+`--precision 4` as current default).
 
 If you want your decimal output without fixed fraction amount, you can just
 use `--radix 10` or `@10`. All other `--radix` (Integer [ 2 .. 36 ]) will
