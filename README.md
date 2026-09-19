@@ -56,9 +56,7 @@ Last but not least: defining a `+` argument will include ALL presets (additional
 optionally user defined fields).
 
 ## Example Screenshots
-Here are example screenshots of my tool.
-
-<br>
+Here are example screenshots of my utility.
 
 ### Current version v**2** (`meminfo`)
 This is my newest version, which was intended to be a better
@@ -67,8 +65,6 @@ from `mem` to `meminfo` now).
 
 v**2**
 ![v2](./img/meminfo.png)
-
-<br>
 
 ### Original version v**1** (`mem`)
 <details>
