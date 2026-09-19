@@ -20,6 +20,35 @@ Implemented in plain Vanilla JavaScript, **without any dependencies**.
 
 <br><br>
 
+## Supported command line arguments
+There are few supported argv[] parameters (beneath possible `const DEFAULT_*` switches in the code);
+they still need a documentation (in the `meminfo.help()` function, and in here!):
+
+* `--prec[ision]`
+* `--base`
+* `--radix`
+* `--locale`
+* `--show`
+* `--unit`
+* `--index`
+
+Additionally I introduced some syntactic elements to define some (maybe important)
+options w/ less characters. These are **prefixes** to (mostyle numerical) values
+you need to append directly (without any space or stuff):
+
+* `@`: defines the `--radix`.
+* `=`: defines the `--base`.
+
+**Numeric** parameters will be treated like `=` or the `--base`.
+
+**Upper Case** parameters are "presets". You can define more than one.
+They set combinations of `/proc/meminfo` fields.
+
+All other parameters define fields of `/proc/meminfo`. They can also be pure lower case;
+if you define non-existing ones, it'll show an error for it.
+
+Last but not least: defining a `+` argument will include ALL presets.
+
 ## Example Screenshots
 Here are example screenshots of my tool.
 
@@ -36,13 +65,17 @@ v**2**
 <br>
 
 ### Original version v**1** (`mem`)
-This is my original, older implementation. It wasn't intended to be
-a replacement for `cat /proc/meminfo`, so the output looks not the
-same.. I previously used it (many times), but now I think the code
-is also a bit to bloated, maybe. And a bit dirty.. etc.
+<details>
+	<summary>\[**click here** to expand\]
+	This is my original, older implementation. It wasn't intended to be
+	a replacement for `cat /proc/meminfo`, so the output looks not the
+	same.. I previously used it (many times), but now I think the code
+	is also a bit to bloated, maybe. And a bit dirty.. etc.
+	</summary>
 
-v**1**
-![v1](./img/mem.png)
+	v**1**
+	![v1](./img/mem.png)
+</details>
 
 <br><br><br>
 
