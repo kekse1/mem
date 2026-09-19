@@ -62,7 +62,7 @@ This is my newest version, which was intended to be a better
 replacement for `cat /proc/meminfo` **only** (so it's renamed
 from `mem` to `meminfo` now).
 
-> [!INFO]
+> [!NOTE]
 > The [**old, original code base**](./src/js/v1/mem.js) is still available here,
 > including my [**older** screenshot](./img/mem.png).
 
