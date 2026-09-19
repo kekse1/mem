@@ -33,15 +33,6 @@ function, and in here):
 * `--unit`
 * `--index`
 
-<br>
-
-> [!NOTE]
-> To keep the code minimal, I didn't implement a whole `getopt` module or stuff.
-> Just a merely 'hard-coded' `meminfo.getParameters()` function for only the
-> parameters used in here.
-
-<br>
-
 Additionally I introduced some **syntactic elements** to define some options w/ less
 characters. These are **prefixes** to (mostyle numerical) values you need to append
 directly (without any space or stuff):
@@ -60,6 +51,13 @@ if you define non-existing ones, it'll (also) inform you about your mistake.
 
 **Last but not least**: defining a `+` argument will include ALL presets (additionally to
 optionally user defined fields).
+
+<br>
+
+> [!NOTE]
+> To keep the code minimal, I didn't implement a whole `getopt` module or stuff.
+> Just a merely 'hard-coded' `meminfo.getParameters()` function for only the
+> parameters used in here.
 
 <br><br>
 
