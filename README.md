@@ -84,7 +84,7 @@ The only limit is `Math.abs() > 1`.
 ### Unit or Index
 Normally the chosen unit is adjusted by the size.
 
-You can fix the output unit by `--unit`. Either with one character, whereas
+You can fix the output unit via `--unit`. Either with one character, whereas
 the base (1000/1024) is changed by the upper or lower case state of your char.
 Or use two to three chars like `mib` for Mibibyte (base 1024) and `mb` for
 Megabyte (base 1000).
