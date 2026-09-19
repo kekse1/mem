@@ -23,7 +23,7 @@ Implemented in plain Vanilla JavaScript, **without any dependencies**.
 
 <br><br>
 
-## Supported command line arguments
+## Command Line arguments
 There are few supported **argv[] parameters** (beneath possible `const DEFAULT_*`
 switches in the code); they still need a documentation (in the `meminfo.help()`
 function, and in here):
