@@ -46,7 +46,8 @@ any space or stuff):
 **Numeric** parameters will be treated like `=` or the `--base`.
 
 **Upper Case** parameters are "presets". You can define more than one.
-They set combinations of `/proc/meminfo` fields. See also the `const PRESETS[]`.
+They set combinations of `/proc/meminfo` fields. See also the `const PRESETS[]`
+(currently supported `MEM` and `SWAP`).
 
 All other parameters define fields of `/proc/meminfo`. They can also be pure lower case;
 if you define non-existing ones, it'll show an error for it.
