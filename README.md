@@ -68,7 +68,7 @@ from `mem` to `meminfo` now).
 
 > [!NOTE]
 > My [old, original code base](./src/js/v1/mem.js) is still available here,
-> including my [**older** screenshot](./img/mem.png).
+> including the [**older** screenshot](./img/mem.png).
 
 <br><br><br>
 
