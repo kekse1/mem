@@ -21,8 +21,9 @@ Implemented in plain Vanilla JavaScript, **without any dependencies**.
 <br><br>
 
 ## Supported command line arguments
-There are few supported argv[] parameters (beneath possible `const DEFAULT_*` switches in the code);
-they still need a documentation (in the `meminfo.help()` function, and in here):
+There are few supported **argv[] parameters** (beneath possible `const DEFAULT_*`
+switches in the code); they still need a documentation (in the `meminfo.help()`
+function, and in here):
 
 * `--prec[ision]`
 * `--base`
@@ -32,13 +33,14 @@ they still need a documentation (in the `meminfo.help()` function, and in here):
 * `--unit`
 * `--index`
 
-To keep the code minimal, I didn't implement a whole `getopt` module or stuff.
-Just a merely 'hard-coded' `meminfo.getParameters()` function for only the
-parameters used in here.
+> [!NOTE]
+> To keep the code minimal, I didn't implement a whole `getopt` module or stuff.
+> Just a merely 'hard-coded' `meminfo.getParameters()` function for only the
+> parameters used in here.
 
-Additionally I introduced some syntactic elements to define some options w/ less characters.
-These are **prefixes** to (mostyle numerical) values you need to append directly (without
-any space or stuff):
+Additionally I introduced some **syntactic elements** to define some options w/ less
+characters. These are **prefixes** to (mostyle numerical) values you need to append
+directly (without any space or stuff):
 
 * `@`: defines the `--radix`.
 * `=`: defines the `--base`.
@@ -49,10 +51,10 @@ any space or stuff):
 They set combinations of `/proc/meminfo` fields. See also the `const PRESETS[]`
 (currently supported `MEM` and `SWAP`).
 
-All other parameters define fields of `/proc/meminfo`. They can also be pure lower case;
+**All other parameters** define fields of `/proc/meminfo`. They can also be pure lower case;
 if you define non-existing ones, it'll (also) inform you about your mistake.
 
-Last but not least: defining a `+` argument will include ALL presets (additionally to
+**Last but not least**: defining a `+` argument will include ALL presets (additionally to
 optionally user defined fields).
 
 <br><br>
