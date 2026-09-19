@@ -32,6 +32,10 @@ they still need a documentation (in the `meminfo.help()` function, and in here):
 * `--unit`
 * `--index`
 
+To keep the code minimal, I didn't implement a whole `getopt` module or stuff.
+Just a merely 'hard-coded' `meminfo.getParameters()` function for only the
+parameters used in here.
+
 Additionally I introduced some syntactic elements to define some options w/ less characters.
 These are **prefixes** to (mostyle numerical) values you need to append directly (without
 any space or stuff):
