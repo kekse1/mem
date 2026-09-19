@@ -4,7 +4,7 @@
 /*
  * Copyright (c) Sebastian Kucharczyk <kuchen@kekse.biz>
  * https://kekse.biz/ https://github.com/kekse1/meminfo/
- * v2.0.9
+ * v2.1.0
  */
 
 /*
@@ -23,8 +23,8 @@
  * TODO * the `meminfo.help()` `--help` output needs to be done.
  *
  * TODO * specific `--unit`. maybe even `--index`!
- *	=> .size(..., _base => als unit... dort getIndex()); ..
- *		BEST: extra {index} option, w/ .size.getIndex(_unit, _base); ...
+ *	=> .size(..., _base => als unit... dort getUnit()); ..
+ *		BEST: extra {index} option, w/ .size.findUnit(_unit); ...
  * 
  * TODO * Math.size() => BigInt support! PLEASE CALCULATE WITH IT, NO CAST!!1 ...
  *		maybe first check if below Number.MAX_SAFE_INTEGER for current version,
@@ -237,9 +237,69 @@ if(!globalThis[kekse1])
 			' ' + UNIT[index][_options.base]));
 	}});
 
-	Math.size.getIndex = (_unit, _base) => {
-throw new Error('TODO');
+	Math.size.findUnit = (_unit) => {
+		if(typeof _unit !== 'string')
+		{
+			return null;
+		}
+
+		if(!(_unit = _unit.trim()))
+		{
+			return [ 0, 1000 ];
+		}
+
+		const	UNIT = Math.size.units;
+		var	base;
+
+		if(_unit.length === 1)
+		{
+			if(_unit[0].isLowerCase)
+			{
+				base = 1000;
+			}
+			else
+			{
+				base = 1024;
+			}
+			
+			_unit = _unit.toLowerCase();
+
+			for(var i = 0; i < UNIT.length; ++i)
+			{
+				if(UNIT[i][base][0].toLowerCase() === _unit)
+				{
+					return [ i, base ];
+				}
+			}
+			
+			return null;
+		}
+
+		if((_unit = _unit.substr(0, 2).toLowerCase()).includes('i'))
+		{
+			base = 1024;
+		}
+		else
+		{
+			base = 1000;
+		}
+
+		_unit =	_unit[0];
+
+		for(var i = 0; i < UNIT.length; ++i)
+		{
+			if(UNIT[base][0].toLowerCase() === _unit)
+			{
+				return [ i, base ];
+			}
+		}
+
+		return null;
 	};
+
+const test = [ 'm', 'M', 'gib', 'gb', '', 'xyz' ];
+for(const t of test) console.dir({ [t]: Math.size.findUnit(t) });
+process.exit(123);
 	
 	Math.size.isRegularBase = (_base) => (
 		_base === 1000 || _base === 1024);
