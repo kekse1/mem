@@ -22,7 +22,7 @@ Implemented in plain Vanilla JavaScript, **without any dependencies**.
 
 ## Supported command line arguments
 There are few supported argv[] parameters (beneath possible `const DEFAULT_*` switches in the code);
-they still need a documentation (in the `meminfo.help()` function, and in here!):
+they still need a documentation (in the `meminfo.help()` function, and in here):
 
 * `--prec[ision]`
 * `--base`
@@ -32,9 +32,9 @@ they still need a documentation (in the `meminfo.help()` function, and in here!)
 * `--unit`
 * `--index`
 
-Additionally I introduced some syntactic elements to define some (maybe important)
-options w/ less characters. These are **prefixes** to (mostyle numerical) values
-you need to append directly (without any space or stuff):
+Additionally I introduced some syntactic elements to define some options w/ less characters.
+These are **prefixes** to (mostyle numerical) values you need to append directly (without
+any space or stuff):
 
 * `@`: defines the `--radix`.
 * `=`: defines the `--base`.
